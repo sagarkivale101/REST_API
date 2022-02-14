@@ -9,6 +9,7 @@ const db = mongoose.connection;
 db.on('error',  console.error.bind(console, 'MONGODB error'));
 
 const empSchema = new mongoose.Schema({
+  Eid: Number,
   firstName: String, 
   age: Number
 })
@@ -22,15 +23,17 @@ app.use(bodyparser.json());
 const PORT = 8080;
 
 const employee =[
-    { 
+    {   
+      Eid: 1,
         firstName: "John", 
         age: 27  
       }, 
-      { 
+      { Eid: 2,
         firstName: "James", 
         age: 32 
       }, 
       { 
+        Eid: 3,
         firstName: "Robert", 
         age: 45 
       } 
@@ -39,15 +42,15 @@ const employee =[
 app.get("/", async (req, res) => {
  await Emp.deleteMany();
  await Emp.insertMany(employee);
-   Emp.find((err, emps)=>{
+Emp.find((err, emps)=>{
 
      res.json(emps)
    }) 
 })
 
 
-app.get("/emp/:firstName",async (req, res) => {
- const e = await Emp.findOne({firstName: req.params.firstName})
+app.get("/emp/:Eid",async (req, res) => {
+ const e = await Emp.findOne({Eid: req.params.Eid})
   console.log("employee" ,e );
   res.json(e)
 })
