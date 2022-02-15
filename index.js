@@ -9,7 +9,7 @@ const db = mongoose.connection;
 db.on('error',  console.error.bind(console, 'MONGODB error'));
 
 const empSchema = new mongoose.Schema({
-  Eid: Number,
+  _id: Number,
   firstName: String, 
   age: Number
 })
@@ -24,66 +24,101 @@ const PORT = 8080;
 
 const employee =[
     {   
-      Eid: 1,
+      _id: 1,
         firstName: "John", 
         age: 27  
       }, 
-      { Eid: 2,
+      { _id: 2,
         firstName: "James", 
         age: 32 
       }, 
       { 
-        Eid: 3,
+        _id: 3,
         firstName: "Robert", 
         age: 45 
       } 
 ]
 
 app.get("/", async (req, res) => {
- await Emp.deleteMany();
- await Emp.insertMany(employee);
+ //await Emp.deleteMany();
+ //await Emp.insertMany(employee);
 Emp.find((err, emps)=>{
 
      res.json(emps)
    }) 
+
+  //  Emp.find((err, emps)=>{
+  //    console.log(emps[0].Eid);
+  //    res.json(emps)
+  //  }).sort({Eid:-1}).limit(1)
+
 })
 
 
+ function max(){
+
+  let a=0;
+  Emp.find((err, emps)=>{
+   console.log(emps[0].Eid);
+    a = emps[0].Eid; 
+
+  }).sort({id:-1}).limit(1)
+
+  return a;
+}
+
+
+
+
 app.get("/emp/:Eid",async (req, res) => {
- const e = await Emp.findOne({Eid: req.params.Eid})
+ const e = await Emp.findOne({_id: req.params.Eid})
   console.log("employee" ,e );
   res.json(e)
 })
 
+
 app.post("/emp", (req, res) => {
+ 
+
   const emp = new Emp({
+    _id:req.body._id,
     firstName:req.body.firstName,
     age:req.body.age 
 
   })
 
   emp.save((err)=>{
-    
     res.json(emp)
   })
 
-
-
-  //res.json({message:"ok"})
 })
+
+
 
 app.put("/emp/:id", (req, res) => {
-  console.log(req.params.id);
-  console.log(req.body);
-  res.json({message:`updated `})
-  console.log(employee);
+  
+Emp.findByIdAndUpdate( req.params.id , {$set: {'age': req.body.age}}, {new: true},
+function(err,user){
+  if(err){
+      res.json({error :err}) ; 
+  } else{
+      res.send(user) ; 
+  }
 })
 
+})
+
+
 app.delete("/emp/:id", (req, res) => {
-  console.log(req.params.id);
-  console.log(req.body);
-  res.json({message:"deleted"})
-  console.log(employee);
+  
+  Emp.findByIdAndDelete( req.params.id, 
+  function(err,user){
+    if(err){
+        res.json({error :err}) ; 
+    } else{
+        res.send(user) ; 
+    }
+  })
 })
 
 
