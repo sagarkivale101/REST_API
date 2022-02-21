@@ -1,13 +1,14 @@
 const express = require('express');
 const bodyparser = require('body-parser');
+const connectDB = require('./db');
 const mongoose = require('mongoose')
 
-const mongoDB = 'mongodb://localhost:27017/emp_api'
-mongoose.connect(mongoDB, {useNewUrlParser:true, useUnifiedTopology:true})
+// const mongoDB = 'mongodb://localhost:27017/emp_api'
+// mongoose.connect(mongoDB, {useNewUrlParser:true, useUnifiedTopology:true})
 
-const db = mongoose.connection;
-db.on('error',  console.error.bind(console, 'MONGODB error'));
-
+// const db = mongoose.connection;
+// db.on('error',  console.error.bind(console, 'MONGODB error'));
+connectDB();
 const empSchema = new mongoose.Schema({
   _id: Number,
   firstName: String, 
@@ -40,8 +41,8 @@ const employee =[
 ]
 
 app.get("/", async (req, res) => {
- //await Emp.deleteMany();
- //await Emp.insertMany(employee);
+ await Emp.deleteMany();
+ await Emp.insertMany(employee);
 Emp.find((err, emps)=>{
 
      res.json(emps)
